@@ -48,9 +48,10 @@ def handle_message(event):
 
     # ユーザー情報取得
     user_id = profile.user_id
+    user_name = profile.display_name
     # pushするメッセージを作成
-    messages = TextSendMessage(text=f"こんにちは！")
-    
+    messages = TextSendMessage(text=f"こんにちは！{user_name}さん。idは{user_id}です。")
+
     # ユーザーにメッセージを送信する
     line_bot_api.push_message(user_id, messages=messages)
     # line_bot_api.reply_message(event.reply_token, TextSendMessage(text=event.message.text))
