@@ -8,6 +8,8 @@ from linebot.exceptions import (
 from linebot.models import (
     MessageEvent, TextMessage, TextSendMessage,
 )
+import urllib.request
+import json
 import os
 
 app = Flask(__name__)
@@ -20,14 +22,12 @@ handler = WebhookHandler(YOUR_CHANNEL_SECRET)
 
 @app.route("/callback", methods=['POST'])
 def callback():
-    # get X-Line-Signature header value
+
     signature = request.headers['X-Line-Signature']
 
-    # get request body as text
     body = request.get_data(as_text=True)
     app.logger.info("Request body: " + body)
 
-    # handle webhook body
     try:
         handler.handle(body, signature)
     except InvalidSignatureError:
@@ -35,27 +35,55 @@ def callback():
 
     return 'OK'
 
-# push通知機能
-# def push():
-#     user_id = ""
-#     messages = TextSendMessage(text=f"こんにちは！")
-#     line_bot_api.push_message(user_id, messages=messages)
-
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
-    profile = line_bot_api.get_profile(event.source.user_id)
+
+    # API
+    target_url = 'https://jlp.yahooapis.jp/KouseiService/V2/kousei'
+    app_id = "dj00aiZpPUxOQkVEVjJibGJBNSZzPWNvbnN1bWVyc2VjcmV0Jng9Yjg-"
+    user_text = event.message.text
 
     # ユーザー情報取得
     user_id = profile.user_id
-    user_name = profile.display_name
-    # pushするメッセージを作成
-    messages = TextSendMessage(text=f"こんにちは！{user_name}さん。idは{user_id}です。")
 
-    # ユーザーにメッセージを送信する
+    # 校閲処理
+    def post(query):
+        headers = {
+            "Content-Type": "application/json",
+            "User-Agent": "Yahoo AppID: {}".format(app_id),
+        }
+        data = {
+            "id": app_id,
+            "jsonrpc" : "2.0",
+            "method": "jlp.kouseiservice.kousei",
+            "params" : {
+                "q": query
+            }
+        }
+        params = json.dumps(data).encode()
+        req = urllib.request.Request(target_url, params, headers)
+
+        with urllib.request.urlopen(req) as res:
+            body = res.read()
+        return body.decode()
+
+    responses = post(user_text)
+    ev_responses = eval(responses)
+    response_data = ev_responses['result']['suggestions']
+
+    # 複数を校正する
+    if response_data == []:
+        print("校正する箇所はありません")
+    else:
+        for response_text in response_data:
+            return response_text['suggestion']
+            # return responses_text = response_text['suggestion']
+
+    messages = TextSendMessage(text=post(user_text))
+
     line_bot_api.push_message(user_id, messages=messages)
     # line_bot_api.reply_message(event.reply_token, TextSendMessage(text=event.message.text))
-
 
 if __name__ == "__main__":
     port = int(os.getenv("PORT", 5000))
