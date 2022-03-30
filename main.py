@@ -74,10 +74,10 @@ def handle_message(event):
 
     # 複数を校正する
     if response_data == []:
-        print("校正する箇所はありません")
+        line_bot_api.reply_message(event.reply_token, TextSendMessage(text=print("校正する箇所はありません")))
     else:
         for response_text in response_data:
-            return response_text['suggestion']
+            line_bot_api.reply_message(event.reply_token, TextSendMessage(text=print(response_text['suggestion'])))
             # line_bot_api.push_message(user_id, messages=text)
             # return responses_text = response_text['suggestion']
 
