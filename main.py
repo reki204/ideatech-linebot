@@ -43,8 +43,7 @@ def callback():
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
 
-    # ユーザー情報取得
-    # user_id = profile.user_id
+    # ユーザーテキスト取得
     user_text = event.message.text
 
     # 校閲処理
@@ -69,7 +68,6 @@ def handle_message(event):
         return body.decode()
 
     responses = post(user_text)
-    # responses = line_bot_api.reply_message(event.reply_token, TextSendMessage(text=post(user_text)))
     ev_responses = eval(responses)
     response_data = ev_responses['result']['suggestions']
 
@@ -78,15 +76,7 @@ def handle_message(event):
         line_bot_api.reply_message(event.reply_token, TextSendMessage(text=print("校正する箇所はありません")))
     else:
         for response_text in response_data:
-            # line_bot_api.push_message(user_id, messages=response_text)
             line_bot_api.reply_message(event.reply_token, TextSendMessage(text=response_text['suggestion']))
-            # line_bot_api.push_message(user_id, messages=text)
-            # return responses_text = response_text['suggestion']
-
-    # messages = TextSendMessage(text=post(user_text))
-
-    # line_bot_api.push_message(user_id, messages=messages)
-    # line_bot_api.reply_message(event.reply_token, TextSendMessage(text=post(user_text)))
 
 if __name__ == "__main__":
     port = int(os.getenv("PORT", 5000))
