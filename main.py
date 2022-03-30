@@ -77,14 +77,14 @@ def handle_message(event):
         print("校正する箇所はありません")
     else:
         for response_text in response_data:
-            text = response_text['suggestion']
-            line_bot_api.push_message(user_id, messages=text)
+            return response_text['suggestion']
+            # line_bot_api.push_message(user_id, messages=text)
             # return responses_text = response_text['suggestion']
 
     # messages = TextSendMessage(text=post(user_text))
 
     # line_bot_api.push_message(user_id, messages=messages)
-    # line_bot_api.reply_message(event.reply_token, TextSendMessage(text=event.message.text))
+    line_bot_api.reply_message(event.reply_token, TextSendMessage(text=post(user_text)))
 
 if __name__ == "__main__":
     port = int(os.getenv("PORT", 5000))
