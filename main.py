@@ -41,7 +41,7 @@ def handle_message(event):
 
     # API
     target_url = 'https://jlp.yahooapis.jp/KouseiService/V2/kousei'
-    app_id = "dj00aiZpPUxOQkVEVjJibGJBNSZzPWNvbnN1bWVyc2VjcmV0Jng9Yjg-"
+    app_id = os.environ["APPID"]
     user_text = event.message.text
 
     # ユーザー情報取得
@@ -77,12 +77,13 @@ def handle_message(event):
         print("校正する箇所はありません")
     else:
         for response_text in response_data:
-            return response_text['suggestion']
+            text = response_text['suggestion']
+            line_bot_api.push_message(user_id, messages=text)
             # return responses_text = response_text['suggestion']
 
-    messages = TextSendMessage(text=post(user_text))
+    # messages = TextSendMessage(text=post(user_text))
 
-    line_bot_api.push_message(user_id, messages=messages)
+    # line_bot_api.push_message(user_id, messages=messages)
     # line_bot_api.reply_message(event.reply_token, TextSendMessage(text=event.message.text))
 
 if __name__ == "__main__":
