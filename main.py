@@ -43,8 +43,12 @@ def callback():
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
 
-    # ユーザーテキスト取得
+    # ユーザーのテキスト取得
     user_text = event.message.text
+
+    # ユーザーへメッセージを送信
+    def reply(message):
+        line_bot_api.reply_message(event.reply_token, TextSendMessage(text=message))
 
     # 校閲処理
     def post(query):
@@ -73,10 +77,12 @@ def handle_message(event):
 
     # 複数を校正する
     if response_data == []:
-        line_bot_api.reply_message(event.reply_token, TextSendMessage(text=print("校正する箇所はありません")))
+        # line_bot_api.reply_message(event.reply_token, TextSendMessage(text="校正する箇所はありません"))
+        reply("校正する箇所はありません")
     else:
         for response_text in response_data:
-            line_bot_api.reply_message(event.reply_token, TextSendMessage(text=response_text['suggestion']))
+            # line_bot_api.reply_message(event.reply_token, TextSendMessage(text=response_text['suggestion']))
+            reply(response_text['suggestion'])
 
 if __name__ == "__main__":
     port = int(os.getenv("PORT", 5000))
