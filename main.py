@@ -77,11 +77,9 @@ def handle_message(event):
 
     # 複数を校正する
     if response_data == []:
-        # line_bot_api.reply_message(event.reply_token, TextSendMessage(text="校正する箇所はありません"))
         reply("校正する箇所はありません")
     else:
         for response_text in response_data:
-            # line_bot_api.reply_message(event.reply_token, TextSendMessage(text=response_text['suggestion']))
             reply(response_text['suggestion'])
 
 if __name__ == "__main__":
