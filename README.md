@@ -1,4 +1,4 @@
-### 文章校閲APIを用いたLINEBot
+### 文章校正APIを用いたLINEBot
 
 ### ideatech-linebot
 LINEbot for newcomers.
